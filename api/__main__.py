@@ -21,18 +21,12 @@ async def detect_nsfw(url: str):
     porn = results['data']['porn']
     drawings = results['data']['drawings']
     neutral = results['data']['neutral']
-    if neutral >= 25:
-        results['data']['is_nsfw'] = False
-        return results
-    elif (sexy + porn + hentai) >= 70:
-        results['data']['is_nsfw'] = True
-        return results
-    elif drawings >= 40:
-        results['data']['is_nsfw'] = False
-        return results
-    else:
-        results['data']['is_nsfw'] = False
-        return results
+    results['data']['is_nsfw'] = (
+        neutral < 25
+        and (sexy + porn + hentai >= 70 or drawings < 40)
+        and sexy + porn + hentai >= 70
+    )
+    return results
 
 if __name__ == "__main__":
     uvicorn.run("api:app", host="0.0.0.0", port=PORT, log_level="info")
