@@ -56,9 +56,9 @@ def load_model(model_path):
         raise ValueError(
             "saved_model_path must be the valid directory of a saved model to load.")
 
-    model = tf.keras.models.load_model(model_path, custom_objects={
-                                       'KerasLayer': hub.KerasLayer})
-    return model
+    return tf.keras.models.load_model(
+        model_path, custom_objects={'KerasLayer': hub.KerasLayer}
+    )
 
 
 def classify(model, input_paths, image_dim=IMAGE_DIM):
@@ -77,10 +77,11 @@ def classify_nd(model, nd_images):
     categories = ['drawings', 'hentai', 'neutral', 'porn', 'sexy']
 
     probs = []
-    for i, single_preds in enumerate(model_preds):
-        single_probs = {}
-        for j, pred in enumerate(single_preds):
-            single_probs[categories[j]] = round(float(pred), 6) * 100
+    for single_preds in model_preds:
+        single_probs = {
+            categories[j]: round(float(pred), 6) * 100
+            for j, pred in enumerate(single_preds)
+        }
         probs.append(single_probs)
     return probs
 
